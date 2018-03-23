@@ -445,9 +445,10 @@ function getValidRoutes({
         )
     }
   }
-  console.log(_prefixRoutes)
   if (_prefixRoutes) {
+    console.log(colorized.out(`Adding prefix routes`))
     _prefixRoutes.forEach(({ route, prefix }) => {
+      console.log(colorized.out(`Adding prefix ${prefix} for route ${route}.`))
       validRoutes.push({
         url: `${_siteURL}/${prefix}/wp-json/wp/v2/${route}`,
         type: `wordpress__wp_${route}`,
@@ -455,7 +456,6 @@ function getValidRoutes({
       })
     })
   }
-  console.log(validRoutes)
   return validRoutes
 }
 
