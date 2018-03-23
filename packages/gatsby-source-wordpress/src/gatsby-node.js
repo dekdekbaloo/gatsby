@@ -16,6 +16,7 @@ let _useACF = true
 let _hostingWPCOM
 let _auth
 let _perPage
+let _prefixRoutes
 
 exports.sourceNodes = async (
   { boundActionCreators, getNode, store, cache, createNodeId },
@@ -28,6 +29,8 @@ exports.sourceNodes = async (
     verboseOutput,
     perPage = 100,
     searchAndReplaceContentUrls = {},
+    useMedia = true,
+    prefixRoutes,
   }
 ) => {
   const { createNode } = boundActionCreators
@@ -37,6 +40,7 @@ exports.sourceNodes = async (
   _hostingWPCOM = hostingWPCOM
   _auth = auth
   _perPage = perPage
+  _prefixRoutes = prefixRoutes
 
   let entities = await fetch({
     baseUrl,
@@ -46,6 +50,7 @@ exports.sourceNodes = async (
     _hostingWPCOM,
     _auth,
     _perPage,
+    _prefixRoutes,
     typePrefix,
     refactoredEntityTypes,
   })
@@ -71,7 +76,7 @@ exports.sourceNodes = async (
   entities = normalize.excludeUnknownEntities(entities)
 
   // Creates Gatsby IDs for each entity
-  entities = normalize.createGatsbyIds(createNodeId, entities)
+  entities = normalize.createGatsbyIds(createNodeId, entities, { withPrefix: !!_prefixRoutes })
 
   // Creates links between authors and user entities
   entities = normalize.mapAuthorsToUsers(entities)
@@ -85,14 +90,16 @@ exports.sourceNodes = async (
   // Creates links from entities to media nodes
   entities = normalize.mapEntitiesToMedia(entities)
 
-  // Downloads media files and removes "sizes" data as useless in Gatsby context.
-  entities = await normalize.downloadMediaFiles({
-    entities,
-    store,
-    cache,
-    createNode,
-    _auth,
-  })
+  if (useMedia) {
+    // Downloads media files and removes "sizes" data as useless in Gatsby context.
+    entities = await normalize.downloadMediaFiles({
+      entities,
+      store,
+      cache,
+      createNode,
+      _auth,
+    })
+  }
 
   // Search and replace Content Urls
   entities = normalize.searchReplaceContentUrls({

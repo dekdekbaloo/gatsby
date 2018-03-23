@@ -140,9 +140,13 @@ exports.liftRenderedField = entities =>
 exports.excludeUnknownEntities = entities =>
   entities.filter(e => e.wordpress_id) // Excluding entities without ID
 
-exports.createGatsbyIds = (createNodeId, entities) =>
+exports.createGatsbyIds = (createNodeId, entities, { withPrefix = false }) =>
   entities.map(e => {
-    e.id = createNodeId(`${e.__type}-${e.wordpress_id.toString()}`)
+    let nodeUniqueName = `${e.__type}-${e.wordpress_id.toString()}`
+    if (withPrefix && e.prefix) {
+      nodeUniqueName += `-${e.prefix}`
+    }
+    e.id = createNodeId(nodeUniqueName)
     return e
   })
 

@@ -15,6 +15,7 @@ async function fetch({
   _hostingWPCOM,
   _auth,
   _perPage,
+  _prefixRoutes,
   baseUrl,
   typePrefix,
   refactoredEntityTypes,
@@ -91,7 +92,6 @@ async function fetch({
   } catch (e) {
     httpExceptionHandler(e)
   }
-
   let entities = []
 
   if (allRoutes) {
@@ -99,9 +99,11 @@ async function fetch({
       allRoutes,
       url,
       baseUrl,
+      _siteURL,
       _verbose,
       _useACF,
       _hostingWPCOM,
+      _prefixRoutes,
       typePrefix,
       refactoredEntityTypes,
     })
@@ -188,7 +190,7 @@ async function fetchData({
 }) {
   const type = route.type
   const url = route.url
-
+  const prefix = route.prefix
   if (_verbose)
     console.log(
       colorized.out(
@@ -209,7 +211,7 @@ async function fetchData({
     // Process entities to creating GraphQL Nodes.
     if (Array.isArray(routeResponse)) {
       routeResponse = routeResponse.map(r => {
-        return { ...r, __type: type }
+        return { ...r, __type: type, prefix }
       })
       entities = entities.concat(routeResponse)
     } else {
@@ -342,9 +344,11 @@ function getValidRoutes({
   allRoutes,
   url,
   baseUrl,
+  _siteURL,
   _verbose,
   _useACF,
   _hostingWPCOM,
+  _prefixRoutes,
   typePrefix,
   refactoredEntityTypes,
 }) {
@@ -441,7 +445,17 @@ function getValidRoutes({
         )
     }
   }
-
+  console.log(_prefixRoutes)
+  if (_prefixRoutes) {
+    _prefixRoutes.forEach(({ route, prefix }) => {
+      validRoutes.push({
+        url: `${_siteURL}/${prefix}/wp-json/wp/v2/${route}`,
+        type: `wordpress__wp_${route}`,
+        prefix,
+      })
+    })
+  }
+  console.log(validRoutes)
   return validRoutes
 }
 
