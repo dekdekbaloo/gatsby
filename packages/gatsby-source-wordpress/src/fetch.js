@@ -446,7 +446,7 @@ function getValidRoutes({
     }
   }
   if (_prefixRoutes) {
-    console.log(colorized.out(`Adding prefix routes`))
+    console.log(colorized.out(`Adding prefix routes`), colorized.color.Font.FgCyan)
     _prefixRoutes.forEach(({ route, prefix }) => {
       console.log(colorized.out(`Adding prefix ${prefix} for route ${route}.`))
       validRoutes.push({

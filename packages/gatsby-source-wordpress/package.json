@@ -1,5 +1,5 @@
 {
-  "name": "gatsby-source-wordpress",
+  "name": "@dekdekbaloo/gatsby-source-wordpress",
   "description": "Gatsby source plugin for building websites using the Wordpress CMS as a data source.",
   "version": "2.0.69",
   "author": "Sebastien Fichot <fichot.sebastien@gmail.com>",
