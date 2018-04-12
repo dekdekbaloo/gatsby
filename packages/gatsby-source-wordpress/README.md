@@ -88,6 +88,19 @@ plugins: [
         sourceUrl: "https://source-url.com",
         replacementUrl: "https://replacement-url.com",
       },
+      // Disable media endpoint fetching
+      useMedia: false,
+      // For fetching endpoints from multiple prefixed routes.
+      // Useful for multi-language sites that are separated by different prefixes.
+      // e.g. mywordpress.com/.../posts and mywordpress.com/en/.../posts
+      prefixRoutes: [
+        {
+          route: 'posts',
+          prefix: 'en',
+          // prefix's field value on non-prefixed routes
+          defaultPrefix: 'th'
+        }
+      ]
     },
   },
 ];

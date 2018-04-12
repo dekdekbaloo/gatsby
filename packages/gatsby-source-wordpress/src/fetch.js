@@ -3,6 +3,7 @@ const axios = require(`axios`)
 const _ = require(`lodash`)
 const colorized = require(`./output-color`)
 const httpExceptionHandler = require(`./http-exception-handler`)
+const path = require(`path`)
 
 /**
  * High-level function to coordinate fetching data from a WordPress
@@ -446,14 +447,19 @@ function getValidRoutes({
     }
   }
   if (_prefixRoutes) {
-    console.log(colorized.out(`Adding prefix routes`), colorized.color.Font.FgCyan)
-    _prefixRoutes.forEach(({ route, prefix }) => {
-      console.log(colorized.out(`Adding prefix ${prefix} for route ${route}.`))
+    console.log(colorized.out(`Adding prefix routes`, colorized.color.Font.FgCyan))
+    _prefixRoutes.forEach(({ route, prefix, defaultPrefix }) => {
+      console.log(colorized.out(`Adding prefix ${prefix} for route ${route}.`, colorized.color.Font.FgGreen))
       validRoutes.push({
         url: `${_siteURL}/${prefix}/wp-json/wp/v2/${route}`,
         type: `wordpress__wp_${route}`,
         prefix,
       })
+      if (defaultPrefix) {
+        console.log(colorized.out(`Adding default prefix route for ${route} with ${defaultPrefix}`, colorized.color.Font.FgCyan))
+        const defaultPrefixRoute = validRoutes.find(({ url, prefix }) => !prefix && path.basename(url) === route)
+        defaultPrefixRoute.prefix = defaultPrefix
+      }
     })
   }
   return validRoutes
